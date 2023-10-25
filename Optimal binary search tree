@@ -1,0 +1,50 @@
+Given a sorted array keys[0.. n-1] of search keys and an array freq[0.. n-1] of frequency counts, where freq[i] is the number of searches to keys[i]. Construct a binary search tree of all keys such that the total cost of all the searches is as small as possible.
+Let us first define the cost of a BST. The cost of a BST node is level of that node multiplied by its frequency. Level of root is 1.
+
+
+Example 1:
+
+Input:
+n = 2
+keys = {10, 12}
+freq = {34, 50}
+Output: 118
+Explaination:
+There can be following two possible BSTs 
+        10                       12
+          \                     / 
+           12                 10
+                              
+The cost of tree I is 34*1 + 50*2 = 134
+The cost of tree II is 50*1 + 34*2 = 118 
+
+
+
+def minCostBST(n, keys, freq):
+    # Create a 2D array to store the minimum cost
+    dp = [[0] * n for _ in range(n)]
+
+    # Initialize the diagonal elements with frequencies
+    for i in range(n):
+        dp[i][i] = freq[i]
+
+    # Fill the dp table using dynamic programming
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            dp[i][j] = float('inf')
+
+            # Try all keys as the root of the current subproblem
+            for k in range(i, j + 1):
+                left_cost = dp[i][k - 1] if k > i else 0
+                right_cost = dp[k + 1][j] if k < j else 0
+                dp[i][j] = min(dp[i][j], left_cost + right_cost + sum(freq[i:j+1]))
+
+    return dp[0][n - 1]
+
+# Example
+n = 2
+keys = [10, 12]
+freq = [34, 50]
+result = minCostBST(n, keys, freq)
+print(result)
